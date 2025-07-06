@@ -3,163 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="AI 학습 도우미">
-    <title>🤖 AI 학습 도우미</title>
+    <title>🤖 AI 기술 트렌드 대시보드</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh; color: #333; line-height: 1.6;
-        }
-        .app-container {
-            max-width: 500px; margin: 0 auto; background: white;
-            min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white; padding: 20px; text-align: center;
-        }
-        .content { padding: 20px; }
-        .main-button {
-            width: 100%; background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
-            color: white; border: none; padding: 20px; font-size: 18px;
-            border-radius: 15px; cursor: pointer; margin-bottom: 20px;
-            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; margin: 0; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.12); border-radius: 8px; }
+        .header { text-align: center; border-bottom: 1px solid #e0e0e0; padding-bottom: 20px; margin-bottom: 20px; }
+        .header h1 { margin: 0; color: #1c1e21; }
+        .header p { color: #606770; }
+        .main-button { width: 100%; background: #1877f2; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 20px; transition: background-color 0.2s; }
+        .main-button:hover { background: #166fe5; }
         .main-button:disabled { background: #ccc; cursor: not-allowed; }
-        .main-button:active { transform: translateY(2px); }
-        .result {
-            background: #f8f9fa; border-radius: 15px; padding: 20px;
-            margin-top: 20px; border-left: 5px solid #4ECDC4;
-        }
-        .result a { color: #0056b3; text-decoration: none; font-weight: 500; }
-        .result a:hover { text-decoration: underline; }
-        .loading { text-align: center; padding: 40px 20px; color: #666; }
-        .success-message {
-            background: linear-gradient(45deg, #4ECDC4, #44A08D);
-            color: white; padding: 15px; border-radius: 10px; margin: 15px 0;
-        }
-        .error-message { /* 에러 메시지 스타일 추가 */
-            background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
-            padding: 15px; border-radius: 10px; margin: 15px 0; word-break: break-all;
-        }
+        #result-area .card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #fff; transition: box-shadow 0.2s; }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .card-title a { color: #0d6efd; text-decoration: none; font-weight: 600; font-size: 1.1em; }
+        .card-title a:hover { text-decoration: underline; }
+        .card-meta { font-size: 0.85em; color: #6c757d; margin-top: 8px; display: flex; align-items: center; }
+        .source-tag { display: inline-block; padding: 3px 8px; font-size: 0.75em; border-radius: 12px; color: white; margin-right: 10px; }
+        .tag-github { background-color: #333; }
+        .tag-openai { background-color: #10a37f; }
+        .tag-google { background-color: #ea4335; }
+        .tag-huggingface { background-color: #ffd21e; color: #333; }
+        .tag-hackernews { background-color: #ff6600; }
+        .tag-default { background-color: #6c757d; }
+        .status-message { text-align: center; padding: 40px 20px; color: #666; font-size: 1.1em; border: 2px dashed #ddd; border-radius: 8px; }
+        .error-message { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="container">
         <div class="header">
-            <h1>🤖 AI 학습 도우미</h1>
-            <p>최신 AI 기술을 학습해보세요</p>
+            <h1>🤖 AI 기술 트렌드 대시보드</h1>
+            <p>매일 업데이트되는 최신 AI 도구, 기술, 아이디어를 확인하세요.</p>
         </div>
-        <div class="content">
-            <button class="main-button" onclick="getAiGuide()">🚀 실시간 AI 뉴스 가져오기</button>
-            <div id="result">
-                <div class="result">
-                    <h3>🎯 AI 학습 도우미에 오신 것을 환영합니다!</h3>
-                    <p>위 버튼을 눌러서 실시간 AI 뉴스 헤드라인을 받아보세요!</p>
-                </div>
-            </div>
+        
+        <button class="main-button" id="fetch-button" onclick="fetchContent()">🚀 최신 기술 트렌드 가져오기</button>
+        
+        <div id="result-area">
+            <div class="status-message" id="initial-message">버튼을 눌러 AI 기술 트렌드를 확인하세요.</div>
         </div>
+        <div id="last-updated" style="text-align: center; font-size: 0.8em; color: #888; margin-top: 20px;"></div>
     </div>
 
     <script>
-        const API_URL = 'https://us-central1-ai-learning-helper.cloudfunctions.net/ai-helper';
+        // ==================================================================
+        // !!! 중요: 이 URL을 본인의 실제 URL로 교체해주세요 !!!
+        // Cloud Run > get-latest-content 서비스 상세 정보에서 확인 가능합니다.
+        // ==================================================================
+        const API_URL = 'https://collect-and-save-content-1092892769102.us-central1.run.app';
 
-        async function getAiGuide() {
-            const button = document.querySelector('.main-button');
-            const resultDiv = document.getElementById('result');
+        async function fetchContent() {
+            const button = document.getElementById('fetch-button');
+            const resultArea = document.getElementById('result-area');
+            const lastUpdatedDiv = document.getElementById('last-updated');
 
             button.disabled = true;
-            button.textContent = '🔄 실시간 뉴스 수집 중...';
-            resultDiv.innerHTML = '<div class="loading">Google News에서 최신 AI 기사를 가져오고 있습니다...</div>';
+            button.textContent = '🔄 최신 정보 로딩 중...';
+            resultArea.innerHTML = '<div class="status-message">콘텐츠를 가져오고 있습니다...</div>';
+            lastUpdatedDiv.innerHTML = '';
 
             try {
                 const response = await fetch(API_URL);
-                const data = await response.json(); // 응답이 에러여도 JSON 본문은 읽음
+                const data = await response.json();
 
-                // 백엔드에서 보낸 상태가 'ERROR'일 경우, 에러 메시지를 표시
-                if (data.status === 'ERROR') {
-                    resultDiv.innerHTML = `
-                        <div class="result">
-                            <h3>🚫 백엔드 오류 발생</h3>
-                            <div class="error-message">
-                                <strong>오류 내용:</strong><br>
-                                ${data.message}
-                            </div>
-                            <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                                <strong>💡 해결 방법:</strong><br>
-                                Google Cloud Function의 <code>requirements.txt</code> 파일에 <code>feedparser</code>가 포함되었는지 확인하고 다시 배포해주세요.
-                            </div>
-                        </div>
-                    `;
-                    return; // 에러이므로 여기서 함수 종료
+                if (data.status === 'ERROR' || !response.ok) {
+                    // 서버가 보낸 에러 메시지가 있거나, 응답 자체가 실패한 경우
+                    throw new Error(data.message || `서버 응답 오류: ${response.status}`);
                 }
+                
+                if (data.content && data.content.length > 0) {
+                    let contentHtml = data.content.map(createCard).join('');
+                    resultArea.innerHTML = contentHtml;
+                    const updatedDate = new Date(data.last_updated).toLocaleString('ko-KR');
+                    lastUpdatedDiv.innerHTML = `마지막 업데이트: ${updatedDate}`;
 
-                // 성공적으로 데이터를 받은 경우
-                let newsContent = '';
-
-                // 디버깅: 뉴스가 0개일 경우를 명확히 처리
-                if (data.news_list && data.news_list.length > 0) {
-                    const newsHtmlList = data.news_list.map(news => 
-                        `<li>
-                            <a href="${news.link}" target="_blank" rel="noopener noreferrer">
-                                ${news.title}
-                            </a>
-                        </li>`
-                    ).join('');
-                    
-                    newsContent = `
-                        <div style="margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px;">
-                            <h4>실시간 AI 뉴스 헤드라인</h4>
-                            <ul style="margin-top: 10px; padding-left: 20px; list-style-type: decimal;">
-                                ${newsHtmlList}
-                            </ul>
-                        </div>
-                    `;
                 } else {
-                    newsContent = `
-                        <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px;">
-                            <h4>알림</h4>
-                            <p>뉴스를 가져왔지만, 표시할 항목이 없습니다. 잠시 후 다시 시도해주세요.</p>
-                        </div>
-                    `;
+                    resultArea.innerHTML = '<div class="status-message">최근 24시간 내에 수집된 새로운 콘텐츠가 없습니다.</div>';
+                    const updatedDate = new Date(data.last_updated).toLocaleString('ko-KR');
+                    lastUpdatedDiv.innerHTML = `마지막 업데이트: ${updatedDate}`;
                 }
-
-                resultDiv.innerHTML = `
-                    <div class="result">
-                        <h3>🎉 ${data.message}</h3>
-                        <div class="success-message">
-                            <strong>상태:</strong> ${data.status} ✅
-                        </div>
-                        ${newsContent}
-                    </div>
-                `;
 
             } catch (error) {
+                resultArea.innerHTML = `<div class="error-message"><strong>오류 발생:</strong> ${error.message}</div>`;
                 console.error('Fetch error:', error);
-                resultDiv.innerHTML = `
-                    <div class="result">
-                        <h3>🔧 네트워크 또는 코드 오류</h3>
-                        <p>서버에 연결하거나 응답을 처리하는 중 문제가 발생했습니다.</p>
-                        <div class="error-message">
-                            <strong>오류 내용:</strong> ${error.message}
-                        </div>
-                        <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                            <strong>💡 확인 사항:</strong><br>
-                            • 인터넷 연결을 확인해주세요.<br>
-                            • 브라우저 개발자 콘솔(F12)에 CORS 관련 에러가 없는지 확인해주세요.
-                        </div>
-                    </div>
-                `;
             } finally {
                 button.disabled = false;
-                button.textContent = '🚀 실시간 AI 뉴스 가져오기';
+                button.textContent = '🚀 최신 기술 트렌드 가져오기';
             }
+        }
+
+        function createCard(item) {
+            const source_lower = item.source.toLowerCase();
+            let tagClass = 'tag-default';
+            if (source_lower.includes('github') || source_lower.includes('langchain') || source_lower.includes('llama')) tagClass = 'tag-github';
+            if (source_lower.includes('openai')) tagClass = 'tag-openai';
+            if (source_lower.includes('google')) tagClass = 'tag-google';
+            if (source_lower.includes('hugging')) tagClass = 'tag-huggingface';
+            if (source_lower.includes('hacker')) tagClass = 'tag-hackernews';
+            
+            return `
+                <div class="card">
+                    <div class="card-title">
+                        <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>
+                    </div>
+                    <div class="card-meta">
+                        <span class="source-tag ${tagClass}">${item.source}</span>
+                        <span>${item.published_str} UTC</span>
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>
 </html>
-
